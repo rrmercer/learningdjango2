@@ -1,5 +1,6 @@
 # pycharm / python
 .idea
+__pycache__
 
 # npm
 node_modules
