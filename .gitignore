@@ -5,3 +5,6 @@ env
 
 # npm
 node_modules
+
+# apple stuff
+.DS_Store
