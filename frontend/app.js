@@ -1,38 +1,32 @@
 import React, { Component } from "react";
 import { Link } from 'react-router-dom';
-const todoItems = [
-  {
-    id: 1,
-    title: "Go to Market",
-    description: "Buy ingredients to prepare dinner",
-    completed: true
-  },
-  {
-    id: 2,
-    title: "Study",
-    description: "Read Algebra and History textbook for upcoming test",
-    completed: false
-  },
-  {
-    id: 3,
-    title: "Sally's books",
-    description: "Go to library to rent sally's books",
-    completed: true
-  },
-  {
-    id: 4,
-    title: "Article",
-    description: "Write article on how to use django with react",
-    completed: false
-  }
-];
+const todoItems = [];
+
+async function getBoards() {
+    let url = 'http://localhost:8000/boards/';
+    try {
+        let res = await fetch(url);
+        return await res.json();
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      viewCompleted: false,
-      todoList: todoItems
-    };
+          viewCompleted: false,
+          todoList: []
+        };
+    fetch('http://localhost:8000/boards/')
+      .then(response => response.json())
+      .then(result => {
+        this.setState({
+          viewCompleted: false,
+          todoList: result
+        });
+      })
   }
   displayCompleted = status => {
     if (status) {
@@ -60,9 +54,11 @@ class App extends Component {
   };
   renderItems = () => {
     const { viewCompleted } = this.state;
-    const newItems = this.state.todoList.filter(
-      item => item.completed == viewCompleted
-    );
+
+    const newItems = this.state.todoList;
+//    const newItems = this.state.todoList.filter(
+//      item => item.completed == viewCompleted
+//    );
     return newItems.map(item => (
       <li
         key={item.id}
@@ -89,9 +85,7 @@ class App extends Component {
         <h1 className="text-white text-uppercase text-center my-4">Todo app</h1>
         <div className="row ">
 
-        <p><Link to="/board">Boards</Link></p>
-
-          <div className="col-md-6 col-sm-10 mx-auto p-0">
+         <div className="col-md-6 col-sm-10 mx-auto p-0">
             <div className="card p-3">
               <div className="">
                 <button className="btn btn-primary">Add task</button>
