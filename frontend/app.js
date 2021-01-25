@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from 'react-router-dom';
 const todoItems = [
   {
     id: 1,
@@ -87,6 +88,9 @@ class App extends Component {
       <main className="content">
         <h1 className="text-white text-uppercase text-center my-4">Todo app</h1>
         <div className="row ">
+
+        <p><Link to="/board">Boards</Link></p>
+
           <div className="col-md-6 col-sm-10 mx-auto p-0">
             <div className="card p-3">
               <div className="">
