@@ -2,19 +2,19 @@ import React, { Component } from "react";
 import {Link} from "react-router-dom";
 
 
-class App extends Component {
+class BoardIndex extends Component {
   constructor(props) {
     super(props);
     this.state = {
           viewCompleted: false,
-          todoList: []
+          boardList: []
         };
-    fetch('http://localhost:8000/boards/')
+    fetch('http://localhost:8000/boards/1')
       .then(response => response.json())
       .then(result => {
         this.setState({
           viewCompleted: false,
-          todoList: result
+          boardList: result
         });
       })
   }
@@ -31,7 +31,7 @@ class App extends Component {
           onClick={() => this.displayCompleted(true)}
           className={this.state.viewCompleted ? "active" : ""}
         >
-          complete
+          Complete
         </span>
         <span
           onClick={() => this.displayCompleted(false)}
@@ -45,7 +45,7 @@ class App extends Component {
   renderItems = () => {
     //const { viewCompleted } = this.state;
 
-    const newItems = this.state.todoList;
+    const newItems = this.state.boardList;
 //    const newItems = this.state.todoList.filter(
 //      item => item.completed == viewCompleted
 //    );
@@ -60,7 +60,7 @@ class App extends Component {
           }`}
           title={item.description}
         >
-          <Link to={`/board/${item.id}`}>{item.title}</Link>
+          <Link to={`/cards/${item.id}`}>{item.description}</Link>
           
         </span>
         <span>
@@ -80,7 +80,7 @@ class App extends Component {
             <div className="card p-3">
               <div className="">
               <Link to="/board/add">
-                <button className="btn btn-primary">Add a board</button>
+                <button className="btn btn-primary">Add a card</button>
                 </Link>
               </div>
               {this.renderTabList()}
@@ -94,4 +94,4 @@ class App extends Component {
     );
   }
 }
-export default App;
+export default BoardIndex;

@@ -7,8 +7,9 @@ import {
 } from "react-router-dom";
 
 import App from './App.js';
-import Board from './Board';
-import Users from './Users';
+import AddBoard from './AddBoard';
+import BoardIndex from './BoardIndex';
+import Cards from './Cards';
 import { Component } from 'react';
 
 
@@ -21,20 +22,17 @@ export default (
             <li>
               <Link to="/">Home</Link>
             </li>
-            <li>
-              <Link to="/board">Add a new board</Link>
-            </li>
-            <li>
-              <Link to="/users">Users</Link>
-            </li>
           </ul>
 
         </nav>
             <Switch>
-                <Route path="/board">
-                    <Board />
+                <Route path="/board/add">
+                    <AddBoard />
                 </Route>
-                <Route path="/users" component={Users} />
+                <Route path="/board/:id">
+                    <BoardIndex />
+                </Route>
+                <Route path="/cards" component={Cards} />
                 <Route path="/" component={App} />
             </Switch>
                       </div>
