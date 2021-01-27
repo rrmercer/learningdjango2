@@ -6,7 +6,7 @@ import {
   Link,
 } from "react-router-dom";
 
-import App from './app.js';
+import App from './App.js';
 import Board from './Board';
 import Users from './Users';
 import { Component } from 'react';
