@@ -2,16 +2,17 @@ from django.shortcuts import render
 
 from django.http import JsonResponse
 
+from .models import Board
+from .serializers import BoardSerializer
 
 def index(request):
-    users = [{"id": 1,
-             "title": "209 Georgetown Project List",
-             "description": "list of stuff for rob to do"
-             },
-             {"id": 2,
-              "title": "Cosco list",
-              "description": "list of stuff we need from cosco"}]
-    return JsonResponse(users, safe=False)
+    serializer_class = BoardSerializer
+    queryset = Board.objects.all()
+    # TODO: learn how to do this serialization correctly
+    result = []
+    for entry in queryset:
+        result.append(BoardSerializer(entry).data)
+    return JsonResponse(result, safe=False)
 
 
 def get_board(request, boardid):
