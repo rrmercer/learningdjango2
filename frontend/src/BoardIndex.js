@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import {Link} from "react-router-dom";
+
+import CardName from "./CardName";
+import CardActions from "./CardActions";
 
 
 class BoardIndex extends Component {
@@ -17,33 +19,65 @@ class BoardIndex extends Component {
           boardList: result
         });
       })
-      .then(console.log(this.state))
   }
-
   displayCompleted = status => {
     if (status) {
       return this.setState({ viewCompleted: true });
     }
     return this.setState({ viewCompleted: false });
   };
+    
   renderTabList = () => {
     return (
       <div className="my-5 tab-list">
         <span
           onClick={() => this.displayCompleted(true)}
-          
         >
           Complete
         </span>
         <span
           onClick={() => this.displayCompleted(false)}
-          
         >
           Incomplete
         </span>
       </div>
     );
   };
+  deleteCard = (id) => {
+    this.setState( prevState => {
+      return {
+        boardList: prevState.boardList.filter( l => l.id !== id )
+        // TODO: remove from backend as well
+      }
+    })
+  }
+  editCardName = (id) => {
+    this.setState( prevState => {
+      return {
+        boardList: prevState.boardList.map( l => {
+          if (l.id === id) {
+            l.editEnabled = !l.editEnabled;
+            return l;
+          } 
+          return l;
+        })
+      }
+    })
+  }
+   
+  setCardName = (id, newValue) => {
+    this.setState( prevState => {
+      return {
+        boardList: prevState.boardList.map( l => {
+          if (l.id === id) {
+            l.description = newValue;
+            return l;
+          } 
+          return l;
+        })
+      }
+    })
+  }
   renderItems = () => {
     //const { viewCompleted } = this.state;
     
@@ -56,33 +90,39 @@ class BoardIndex extends Component {
         key={item.id}
         className="list-group-item d-flex justify-content-between align-items-center"
       >
-        <span
-          className={`todo-title mr-2`}
-          title={item.description}
-        >
-          <Link to={`/cards/${item.id}`}>{item.description}</Link>
-          
-        </span>
-        <span>
-          <button className="btn btn-secondary mr-2"> Edit </button>
-          <button className="btn btn-danger">Delete </button>
-        </span>
+          <CardName item={item}
+            setCardNameCallback={this.setCardName} />
+          <CardActions item={item}
+            editCallback={this.editCardName}
+            deleteCallback={this.deleteCard} />
+        
       </li>
     ));
+  };
+  addCard = () => {
+    this.setState(prevState => {
+      return {
+        boardList: [
+          ...prevState.boardList,
+          {
+            id: prevState.boardList.length + 1, 
+            description: "", 
+            title: "",
+            editEnabled: true
+          }
+        ]
+      }
+    });
   };
   render() {
     
     return (
       <main className="content">
-        <h1 className="text-white text-uppercase text-center my-4">Todo app</h1>
         <div className="row ">
-
          <div className="col-md-6 col-sm-10 mx-auto p-0">
             <div className="card p-3">
               <div className="">
-              <Link to="/card/add">
-                <button className="btn btn-primary">Add a card</button>
-                </Link>
+                <button className="btn btn-primary" onClick={() => this.addCard()}>Add a card</button>
               </div>
               {this.renderTabList()}
               <ul className="list-group list-group-flush">

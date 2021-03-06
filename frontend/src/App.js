@@ -19,30 +19,6 @@ class App extends Component {
       })
   }
 
-  displayCompleted = status => {
-    if (status) {
-      return this.setState({ viewCompleted: true });
-    }
-    return this.setState({ viewCompleted: false });
-  };
-  renderTabList = () => {
-    return (
-      <div className="my-5 tab-list">
-        <span
-          onClick={() => this.displayCompleted(true)}
-          className={this.state.viewCompleted ? "active" : ""}
-        >
-          complete
-        </span>
-        <span
-          onClick={() => this.displayCompleted(false)}
-          className={this.state.viewCompleted ? "" : "active"}
-        >
-          Incomplete
-        </span>
-      </div>
-    );
-  };
   deleteBoard = (id) => {
     this.setState( prevState => {
       return {
@@ -123,9 +99,10 @@ class App extends Component {
         todoList: [
           ...prevState.todoList,
           {
-            id: prevState.todoList.length+1, 
+            id: prevState.todoList.length + 1, 
             description: "", 
-            title: ""
+            title: "",
+            editEnabled: true
           }
         ]
       }
