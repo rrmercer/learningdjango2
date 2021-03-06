@@ -121,7 +121,7 @@ class BoardIndex extends Component {
         <div className="row ">
          <div className="col-md-6 col-sm-10 mx-auto p-0">
             <div className="card p-3">
-              <div className="">
+              <div className="container">
                 <button className="btn btn-primary" onClick={() => this.addCard()}>Add a card</button>
               </div>
               {this.renderTabList()}

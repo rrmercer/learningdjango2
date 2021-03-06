@@ -128,21 +128,20 @@ class App extends Component {
   render() {
     return (
       <main className="content">
-
-        <div className="row ">
-
          <div className="col-md-6 col-sm-10 mx-auto p-0">
             <div className="card p-3">
-              <div className="">
-                <button className="btn btn-primary" onClick={() => this.addBoard()}>Add a board</button>
-              </div>
-
-              <ul className="list-group list-group-flush">
-                {this.renderItems()}
-              </ul>
-            </div>
+              <div class="card-body">
+                <h5 class="card-title">Boards</h5>
+                <ul className="list-group list-group-flush">
+                  {this.renderItems()}
+                </ul>
+              
+                <div className="row gx-5">
+                  <button className="btn btn-primary" onClick={() => this.addBoard()}>Add a board</button>
+                </div>
+                </div>
+                </div>
           </div>
-        </div>
       </main>
     );
   }
