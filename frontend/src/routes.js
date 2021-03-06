@@ -29,13 +29,11 @@ export default (
                 <Route path="/board/add">
                     <AddBoard />
                 </Route>
-                <Route path="/board/:id">
-                    <BoardIndex />
-                </Route>
+                <Route path="/board/:id" component= {BoardIndex} />
                 <Route path="/cards" component={Cards} />
                 <Route path="/" component={App} />
             </Switch>
-                      </div>
+        </div>
         </main>
         </Router>
 );

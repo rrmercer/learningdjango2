@@ -3,12 +3,12 @@ import {Link} from "react-router-dom";
 
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-          viewCompleted: false,
-          todoList: []
-        };
+  state = {
+    viewCompleted: false,
+    todoList: []
+  };
+
+  componentDidMount() {
     fetch('http://localhost:8000/boards/')
       .then(response => response.json())
       .then(result => {
@@ -18,6 +18,7 @@ class App extends Component {
         });
       })
   }
+  
   displayCompleted = status => {
     if (status) {
       return this.setState({ viewCompleted: true });
@@ -42,6 +43,81 @@ class App extends Component {
       </div>
     );
   };
+  deleteBoard = (id) => {
+    this.setState( prevState => {
+      return {
+        todoList: prevState.todoList.filter( l => l.id !== id )
+        // TODO: remove from backend as well
+      }
+    })
+  }
+  editBoardName = (id) => {
+    this.setState( prevState => {
+      return {
+        todoList: prevState.todoList.map( l => {
+          if (l.id === id) {
+            l.editEnabled = !l.editEnabled;
+            return l;
+          } 
+          return l;
+        })
+      }
+    })
+  }
+
+  setBoardName = (id, newTitle) => {
+    this.setState( prevState => {
+      return {
+        todoList: prevState.todoList.map( l => {
+          if (l.id === id) {
+            l.title = newTitle;
+            console.log("called again")
+            return l;
+          } 
+          return l;
+        })
+      }
+    })
+  }
+
+  displayBoardItemName = (item) => {
+      if (item.editEnabled) {
+        return (
+        <input type="text" 
+          defaultValue={item.title} 
+          onChange={e => this.setBoardName(item.id, e.target.value)}
+          />
+        );
+      } else {
+        return (
+        <span
+          className={`todo-title mr-2 ${
+            this.state.viewCompleted ? "completed-todo" : ""
+          }`}
+          title={item.description}
+        >
+        <Link to={`/board/${item.id}`}>{item.title}</Link>
+        </span>
+        );
+      }
+  }
+  displayBoardItemActions = (item) => {
+    if (item.editEnabled) {
+      return (
+        <span>  
+          <button className="btn btn-secondary mr-2" onClick={() => this.editBoardName(item.id)}> Save </button>
+          <button className="btn btn-danger" onClick={() => this.deleteBoard(item.id)}>Delete </button>
+        </span>
+      );
+    } else {
+      return (
+        <span>  
+          <button className="btn btn-secondary mr-2" onClick={() => this.editBoardName(item.id)}> Edit </button>
+          <button className="btn btn-danger" onClick={() => this.deleteBoard(item.id)}>Delete </button>
+        </span>
+      );
+    }
+  }
   renderItems = () => {
     //const { viewCompleted } = this.state;
 
@@ -52,21 +128,10 @@ class App extends Component {
     return newItems.map(item => (
       <li
         key={item.id}
-        className="list-group-item d-flex justify-content-between align-items-center"
-      >
-        <span
-          className={`todo-title mr-2 ${
-            this.state.viewCompleted ? "completed-todo" : ""
-          }`}
-          title={item.description}
-        >
-          <Link to={`/board/${item.id}`}>{item.title}</Link>
-          
-        </span>
-        <span>
-          <button className="btn btn-secondary mr-2"> Edit </button>
-          <button className="btn btn-danger">Delete </button>
-        </span>
+        className="list-group-item d-flex justify-content-between align-items-center">
+        {this.displayBoardItemName(item)} {/* TODO: these should be components */}
+        {this.displayBoardItemActions(item)}
+        
       </li>
     ));
   };
@@ -83,7 +148,7 @@ class App extends Component {
                 <button className="btn btn-primary">Add a board</button>
                 </Link>
               </div>
-              {this.renderTabList()}
+
               <ul className="list-group list-group-flush">
                 {this.renderItems()}
               </ul>

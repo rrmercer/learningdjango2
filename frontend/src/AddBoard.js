@@ -2,7 +2,7 @@ import React from 'react';
 
 export default () => (
     <section>
-        <form action="http://localhost:8000/boards">
+        <form action="http://localhost:8000/boards/add" method="POST">
         <p>
             <label>
               Tile:

@@ -3,13 +3,13 @@ import {Link} from "react-router-dom";
 
 
 class BoardIndex extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-          viewCompleted: false,
-          boardList: []
-        };
-    fetch('http://localhost:8000/boards/1')
+  state = {
+    viewCompleted: false,
+    boardList: []
+  };
+  componentDidMount() {
+    const boardId = this.props.match.params.id;
+    fetch(`http://localhost:8000/boards/${boardId}`)
       .then(response => response.json())
       .then(result => {
         this.setState({
@@ -17,7 +17,9 @@ class BoardIndex extends Component {
           boardList: result
         });
       })
+      .then(console.log(this.state))
   }
+
   displayCompleted = status => {
     if (status) {
       return this.setState({ viewCompleted: true });
@@ -29,13 +31,13 @@ class BoardIndex extends Component {
       <div className="my-5 tab-list">
         <span
           onClick={() => this.displayCompleted(true)}
-          className={this.state.viewCompleted ? "active" : ""}
+          
         >
           Complete
         </span>
         <span
           onClick={() => this.displayCompleted(false)}
-          className={this.state.viewCompleted ? "" : "active"}
+          
         >
           Incomplete
         </span>
@@ -44,7 +46,7 @@ class BoardIndex extends Component {
   };
   renderItems = () => {
     //const { viewCompleted } = this.state;
-
+    
     const newItems = this.state.boardList;
 //    const newItems = this.state.todoList.filter(
 //      item => item.completed == viewCompleted
@@ -55,9 +57,7 @@ class BoardIndex extends Component {
         className="list-group-item d-flex justify-content-between align-items-center"
       >
         <span
-          className={`todo-title mr-2 ${
-            this.state.viewCompleted ? "completed-todo" : ""
-          }`}
+          className={`todo-title mr-2`}
           title={item.description}
         >
           <Link to={`/cards/${item.id}`}>{item.description}</Link>
@@ -71,6 +71,7 @@ class BoardIndex extends Component {
     ));
   };
   render() {
+    
     return (
       <main className="content">
         <h1 className="text-white text-uppercase text-center my-4">Todo app</h1>
@@ -79,7 +80,7 @@ class BoardIndex extends Component {
          <div className="col-md-6 col-sm-10 mx-auto p-0">
             <div className="card p-3">
               <div className="">
-              <Link to="/board/add">
+              <Link to="/card/add">
                 <button className="btn btn-primary">Add a card</button>
                 </Link>
               </div>
