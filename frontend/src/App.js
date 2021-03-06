@@ -18,7 +18,7 @@ class App extends Component {
         });
       })
   }
-  
+
   displayCompleted = status => {
     if (status) {
       return this.setState({ viewCompleted: true });
@@ -71,7 +71,6 @@ class App extends Component {
         todoList: prevState.todoList.map( l => {
           if (l.id === id) {
             l.title = newTitle;
-            console.log("called again")
             return l;
           } 
           return l;
@@ -118,6 +117,20 @@ class App extends Component {
       );
     }
   }
+  addBoard = () => {
+    this.setState(prevState => {
+      return {
+        todoList: [
+          ...prevState.todoList,
+          {
+            id: prevState.todoList.length+1, 
+            description: "", 
+            title: ""
+          }
+        ]
+      }
+    });
+  };
   renderItems = () => {
     //const { viewCompleted } = this.state;
 
@@ -138,15 +151,13 @@ class App extends Component {
   render() {
     return (
       <main className="content">
-        <h1 className="text-white text-uppercase text-center my-4">Todo app</h1>
+
         <div className="row ">
 
          <div className="col-md-6 col-sm-10 mx-auto p-0">
             <div className="card p-3">
               <div className="">
-              <Link to="/board/add">
-                <button className="btn btn-primary">Add a board</button>
-                </Link>
+                <button className="btn btn-primary" onClick={() => this.addBoard()}>Add a board</button>
               </div>
 
               <ul className="list-group list-group-flush">
