@@ -36,3 +36,7 @@
     transform: rotate(360deg);
   }
 }
+
+.txtBoard {
+  width: 70%;
+}

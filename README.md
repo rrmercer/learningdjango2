@@ -12,7 +12,10 @@ $> cd mysite
 $> python3 -m venv env
 $> source env/bin/activate
 # todo: requirements
+
 $> pip install django
 $> pip install djangorestframework
 $> pip install django-cors-headers
 $> python manage.py runserver
+
+currently env setup here: /Users/robmercer/Documents/learningdjango/firstapi/env/bin/activate

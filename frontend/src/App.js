@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import {Link} from "react-router-dom";
+import axios from 'axios';
 
+import './App.css';   
 
 class App extends Component {
   state = {
@@ -18,14 +20,18 @@ class App extends Component {
         });
       })
   }
-
   deleteBoard = (id) => {
-    this.setState( prevState => {
-      return {
-        todoList: prevState.todoList.filter( l => l.id !== id )
-        // TODO: remove from backend as well
-      }
-    })
+    // delete from backend then update ux
+    axios({
+      method: 'delete',
+      url: `http://localhost:8000/boards/delete/${id}`
+    }).then(response => {
+      this.setState( prevState => {
+        return {
+          todoList: prevState.todoList.filter( l => l.id !== id )
+        }
+      })
+    }) 
   }
   editBoardName = (id) => {
     this.setState( prevState => {
@@ -41,27 +47,56 @@ class App extends Component {
     })
   }
 
-  setBoardName = (id, newTitle) => {
-    this.setState( prevState => {
-      return {
-        todoList: prevState.todoList.map( l => {
-          if (l.id === id) {
-            l.title = newTitle;
-            return l;
-          } 
-          return l;
-        })
-      }
+  saveBoardName = (id, newTitle) => {
+    // update backend, then ui
+    var bodyFormData = new FormData();
+    bodyFormData.append('title', newTitle);
+    //bodyFormData.append('description', "");
+    axios({
+      method: 'post',
+      url: `http://localhost:8000/boards/update/${id}`,
+      data: bodyFormData
     })
+    .then(response => {
+      this.setState(prevState => {
+        return {
+          todoList: prevState.todoList.map( l => {
+            if (l.id === id) {
+              l.title = newTitle;
+              return l;
+            } 
+            return l;
+          })
+        }
+      });
+    })
+    .catch(error => {
+      console.log('Error fetching and parsing data', error);
+    });
   }
 
   displayBoardItemName = (item) => {
       if (item.editEnabled) {
         return (
-        <input type="text" 
-          defaultValue={item.title} 
-          onChange={e => this.setBoardName(item.id, e.target.value)}
-          />
+          <span className="txtBoard">
+            <input type="text" 
+              className="form-control"
+              defaultValue={item.title} 
+              onChange={ e => {
+                this.setState(prevState => {
+                    return {
+                      todoList: prevState.todoList.map( l => {
+                        if (l.id === item.id) {
+                          l.title = e.target.value;
+                          return l;
+                        } 
+                        return l;
+                      })
+                    }
+                })
+              }}
+              />
+          </span>
         );
       } else {
         return (
@@ -80,7 +115,10 @@ class App extends Component {
     if (item.editEnabled) {
       return (
         <span>  
-          <button className="btn btn-secondary mr-2" onClick={() => this.editBoardName(item.id)}> Save </button>
+          <button className="btn btn-secondary mr-2" onClick={() => {
+            this.editBoardName(item.id);
+            this.saveBoardName(item.id, item.title);
+          }}> Save </button>
           <button className="btn btn-danger" onClick={() => this.deleteBoard(item.id)}>Delete </button>
         </span>
       );
@@ -94,27 +132,35 @@ class App extends Component {
     }
   }
   addBoard = () => {
-    this.setState(prevState => {
-      return {
-        todoList: [
-          ...prevState.todoList,
-          {
-            id: prevState.todoList.length + 1, 
-            description: "", 
-            title: "",
-            editEnabled: true
-          }
-        ]
-      }
+    var bodyFormData = new FormData();
+    bodyFormData.append('title', "");
+    bodyFormData.append('description', "");
+    axios({
+      method: 'post',
+      url: 'http://localhost:8000/boards/add',
+      data: bodyFormData
+    })
+    .then(response => {
+      this.setState(prevState => {
+        return {
+          todoList: [
+            ...prevState.todoList,
+            {
+              id: response.data.id, 
+              description: "", 
+              title: "",
+              editEnabled: true
+            }
+          ]
+        }
+      });
+    })
+    .catch(error => {
+      console.log('Error fetching and parsing data', error);
     });
   };
   renderItems = () => {
-    //const { viewCompleted } = this.state;
-
     const newItems = this.state.todoList;
-//    const newItems = this.state.todoList.filter(
-//      item => item.completed == viewCompleted
-//    );
     return newItems.map(item => (
       <li
         key={item.id}
@@ -128,10 +174,10 @@ class App extends Component {
   render() {
     return (
       <main className="content">
-         <div className="col-md-6 col-sm-10 mx-auto p-0">
+         <div className="col-md-8 col-sm-10 mx-auto p-0">
             <div className="card p-3">
-              <div class="card-body">
-                <h5 class="card-title">Boards</h5>
+              <div className="card-body">
+                <h5 className="card-title">Boards</h5>
                 <ul className="list-group list-group-flush">
                   {this.renderItems()}
                 </ul>
@@ -139,8 +185,8 @@ class App extends Component {
                 <div className="row gx-5">
                   <button className="btn btn-primary" onClick={() => this.addBoard()}>Add a board</button>
                 </div>
-                </div>
-                </div>
+              </div>
+            </div>
           </div>
       </main>
     );
