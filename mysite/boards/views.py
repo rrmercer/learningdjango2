@@ -1,12 +1,13 @@
 from django.shortcuts import render
 
+from django.http import HttpResponseRedirect
 from django.http import JsonResponse
+from django.urls import reverse
 
-from .models import Board
-from .serializers import BoardSerializer
+from .models import Board, Card, CardForm, BoardForm
+from .serializers import BoardSerializer, CardSerializer
 
 def index(request):
-    serializer_class = BoardSerializer
     queryset = Board.objects.all()
     # TODO: learn how to do this serialization correctly
     result = []
@@ -16,14 +17,14 @@ def index(request):
 
 
 def get_board(request, boardid):
-    stubbed_response = [{"id": 1,
-                        "description": "fix hinges in laundry room"},
-                        {"id": 2,
-                        "description": "Organize and secure cable behind outdoor tv to wall"},
-                        {"id": 3,
-                        "description": "Attach thomas dresser and book shelf to wall"},
-                        {"id": 4,
-                        "description": "setup kwikset doorlock with main key"},
-                        {"id": 5,
-                        "description": "wash cars"}]
-    return JsonResponse(stubbed_response, safe=False)
+    queryset = Card.objects.filter(board_id=boardid)
+    result = []
+    for entry in queryset:
+        result.append(CardSerializer(entry).data)
+    return JsonResponse(result, safe=False)
+
+
+def save_board(request):
+    form = BoardForm(request.POST)
+    result = form.save()
+    return HttpResponseRedirect(reverse('index')) # TODO: fix so that the js page handles the response and sends this
