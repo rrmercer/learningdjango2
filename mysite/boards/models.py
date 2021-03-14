@@ -16,11 +16,11 @@ class Card(models.Model):
   def _str_(self):
     return self.description
 
-class CardForm(ModelForm):
+class PartialCardForm(ModelForm):
     class Meta:
         model = Card
-        fields = ['description', 'completed']
-
+        fields = ['description']
+        exclude = ['board', 'completed']
 
 class BoardForm(ModelForm):
     class Meta:

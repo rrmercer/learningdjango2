@@ -1,7 +1,9 @@
 import React, { Component } from "react";
+import axios from 'axios';
 
 import CardName from "./CardName";
 import CardActions from "./CardActions";
+
 
 
 class BoardIndex extends Component {
@@ -44,12 +46,45 @@ class BoardIndex extends Component {
     );
   };
   deleteCard = (id) => {
-    this.setState( prevState => {
-      return {
-        boardList: prevState.boardList.filter( l => l.id !== id )
-        // TODO: remove from backend as well
-      }
+    // delete from backend then update ux
+    axios({
+      method: 'delete',
+      url: `http://localhost:8000/boards/cards/delete/${id}`
+    }).then(response => {
+      this.setState( prevState => {
+        return {
+          boardList: prevState.boardList.filter( l => l.id !== id )
+        }
+      })
+    }) 
+
+    
+  }
+  saveCard = (cardId, newText) => {
+    // update backend, then ui
+    var bodyFormData = new FormData();
+    bodyFormData.append('description', newText);
+    axios({
+      method: 'post',
+      url: `http://localhost:8000/boards/cards/update/${cardId}`,
+      data: bodyFormData
     })
+    .then(response => {
+      this.setState(prevState => {
+        return {
+          boardList: prevState.boardList.map( l => {
+            if (l.id === cardId) {
+              l.title = newText;
+              return l;
+            } 
+            return l;
+          })
+        }
+      });
+    })
+    .catch(error => {
+      console.log('Error fetching and parsing data', error);
+    });
   }
   editCardName = (id) => {
     this.setState( prevState => {
@@ -94,24 +129,39 @@ class BoardIndex extends Component {
             setCardNameCallback={this.setCardName} />
           <CardActions item={item}
             editCallback={this.editCardName}
-            deleteCallback={this.deleteCard} />
+            deleteCallback={this.deleteCard} 
+            saveCallback={this.saveCard} />
         
       </li>
     ));
   };
   addCard = () => {
-    this.setState(prevState => {
-      return {
-        boardList: [
-          ...prevState.boardList,
-          {
-            id: prevState.boardList.length + 1, 
-            description: "", 
-            title: "",
-            editEnabled: true
-          }
-        ]
-      }
+    var bodyFormData = new FormData();
+    bodyFormData.append('title', "");
+    bodyFormData.append('description', "");
+    const boardId = this.props.match.params.id;
+    axios({
+      method: 'post',
+      url: `http://localhost:8000/boards/${boardId}/cards/add`,
+      data: bodyFormData
+    })
+    .then(response => {
+      this.setState(prevState => {
+        return {
+          boardList: [
+            ...prevState.boardList,
+            {
+              id: response.data.id, 
+              description: "", 
+              title: "",
+              editEnabled: true
+            }
+          ]
+        }
+      });
+    })
+    .catch(error => {
+      console.log('Error fetching and parsing data', error);
     });
   };
   render() {

@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.urls import reverse
 
-from .models import Board, Card, CardForm, BoardForm
+from .models import Board, Card, PartialCardForm, BoardForm
 from .serializers import BoardSerializer, CardSerializer
 
 def index(request):
@@ -46,7 +46,26 @@ def delete_board(request, boardid):
 
 
 # Card methods
-def save_card(request):
-    form = CardForm(request.POST)
-    result = form.save()
-    return JsonResponse(CardSerializer(result).data, safe=False)
+def save_card(request, boardid):
+    import pdb
+    pdb.set_trace()
+    newCard = Card.objects.create(board=Board.objects.get(pk=boardid),
+                   completed=False,
+                   description='')
+    return JsonResponse(CardSerializer(newCard).data, safe=False)
+
+def update_card(request, cardid):
+    cardToUpdate = Card.objects.get(pk=cardid)
+    form = PartialCardForm(request.POST, instance=cardToUpdate)
+    if form.is_valid():
+        form.save()
+    return JsonResponse({
+        "result": "success"
+    }, safe=False)
+
+def delete_card(request, cardid):
+    cardToDelete = Card.objects.get(pk=cardid)
+    cardToDelete.delete()
+    return JsonResponse({
+        "result": "success"
+    }, safe=False)
