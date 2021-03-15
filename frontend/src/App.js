@@ -106,7 +106,7 @@ class App extends Component {
           }`}
           title={item.description}
         >
-        <Link to={`/board/${item.id}`}>{item.title}</Link>
+        <Link to={`/boards/${item.id}`}>{item.title}</Link>
         </span>
         );
       }

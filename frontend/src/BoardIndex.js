@@ -9,7 +9,8 @@ import CardActions from "./CardActions";
 class BoardIndex extends Component {
   state = {
     viewCompleted: false,
-    boardList: []
+    boardList: [],
+    boardName: ""
   };
   componentDidMount() {
     const boardId = this.props.match.params.id;
@@ -18,7 +19,8 @@ class BoardIndex extends Component {
       .then(result => {
         this.setState({
           viewCompleted: false,
-          boardList: result
+          boardList: result.cards,
+          boardName: result.board.title
         });
       })
   }
@@ -32,16 +34,16 @@ class BoardIndex extends Component {
   renderTabList = () => {
     return (
       <div className="my-5 tab-list">
-        <span
+        <button
           onClick={() => this.displayCompleted(true)}
         >
           Complete
-        </span>
-        <span
+        </button>
+        <button
           onClick={() => this.displayCompleted(false)}
         >
           Incomplete
-        </span>
+        </button>
       </div>
     );
   };
@@ -114,12 +116,11 @@ class BoardIndex extends Component {
     })
   }
   renderItems = () => {
-    //const { viewCompleted } = this.state;
+    const { viewCompleted } = this.state;
     
-    const newItems = this.state.boardList;
-//    const newItems = this.state.todoList.filter(
-//      item => item.completed == viewCompleted
-//    );
+    const newItems = this.state.boardList.filter(
+      item => item.completed == viewCompleted
+    );
     return newItems.map(item => (
       <li
         key={item.id}
@@ -137,7 +138,6 @@ class BoardIndex extends Component {
   };
   addCard = () => {
     var bodyFormData = new FormData();
-    bodyFormData.append('title', "");
     bodyFormData.append('description', "");
     const boardId = this.props.match.params.id;
     axios({
@@ -154,6 +154,7 @@ class BoardIndex extends Component {
               id: response.data.id, 
               description: "", 
               title: "",
+              completed: false,
               editEnabled: true
             }
           ]
@@ -171,6 +172,7 @@ class BoardIndex extends Component {
         <div className="row ">
          <div className="col-md-6 col-sm-10 mx-auto p-0">
             <div className="card p-3">
+              <div><h2>{this.state.boardName}</h2></div>
               <div className="container">
                 <button className="btn btn-primary" onClick={() => this.addCard()}>Add a card</button>
               </div>

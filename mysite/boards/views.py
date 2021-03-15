@@ -9,7 +9,6 @@ from .serializers import BoardSerializer, CardSerializer
 
 def index(request):
     queryset = Board.objects.all()
-    # TODO: learn how to do this serialization correctly
     result = []
     for entry in queryset:
         result.append(BoardSerializer(entry).data)
@@ -18,9 +17,11 @@ def index(request):
 
 def get_board(request, boardid):
     queryset = Card.objects.filter(board_id=boardid)
-    result = []
+    cards = []
     for entry in queryset:
-        result.append(CardSerializer(entry).data)
+        cards.append(CardSerializer(entry).data)
+    board = Board.objects.get(pk=boardid)
+    result = {"board": BoardSerializer(board).data, "cards": cards}
     return JsonResponse(result, safe=False)
 
 def save_board(request):
@@ -47,8 +48,6 @@ def delete_board(request, boardid):
 
 # Card methods
 def save_card(request, boardid):
-    import pdb
-    pdb.set_trace()
     newCard = Card.objects.create(board=Board.objects.get(pk=boardid),
                    completed=False,
                    description='')

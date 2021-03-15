@@ -24,7 +24,7 @@ export default (
 
         </nav>
             <Switch>
-                <Route path="/board/:id" component= {BoardIndex} />
+                <Route path="/boards/:id" component= {BoardIndex} />
                 <Route path="/" component={App} />
             </Switch>
         </div>
